@@ -7,24 +7,23 @@ def create_sample_data():
         
         # Check if data already exists
         if User.query.count() > 0:
-            print("Sample data already exists")
+            print("Data already exists")
             return
         
-        admin = User(username='admin', email='admin@school.com', password='admin123', role='admin')
+        admin = User(username='admin', password='admin123', role='admin')
         
-        teacher1 = User(username='teacher1', email='teacher1@school.com', password='teacher123', role='teacher')
-        teacher2 = User(username='teacher2', email='teacher2@school.com', password='teacher123', role='teacher')
+        teacher1 = User(username='teacher1', password='teacher123', role='teacher')
+        teacher2 = User(username='teacher2', password='teacher123', role='teacher')
         
-        student1 = User(username='student1', email='student1@school.com', password='student123', role='student')
-        student2 = User(username='student2', email='student2@school.com', password='student123', role='student')
-        student3 = User(username='student3', email='student3@school.com', password='student123', role='student')
+        student1 = User(username='student1', password='student123', role='student')
+        student2 = User(username='student2', password='student123', role='student')
+        student3 = User(username='student3', password='student123', role='student')
         
         db.session.add_all([admin, teacher1, teacher2, student1, student2, student3])
         db.session.commit()
         
         course1 = Course(
             name='Introduction to Python',
-            description='Learn the basics of Python programming',
             capacity=30,
             timeslot='MW 10:00 AM - 11:30 AM',
             teacher_id=teacher1.id
@@ -32,7 +31,6 @@ def create_sample_data():
         
         course2 = Course(
             name='Web Development with Flask',
-            description='Build web applications using Flask',
             capacity=25,
             timeslot='TTH 1:00 PM - 2:30 PM',
             teacher_id=teacher1.id
@@ -40,7 +38,6 @@ def create_sample_data():
         
         course3 = Course(
             name='Data Science Fundamentals',
-            description='Introduction to data analysis and visualization',
             capacity=20,
             timeslot='MF 3:00 PM - 4:30 PM',
             teacher_id=teacher2.id

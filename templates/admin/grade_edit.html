@@ -1,0 +1,38 @@
+{% extends 'admin/master.html' %}
+{% block body %}
+<h2>Edit Grade</h2>
+
+<form action="" method="POST" role="form">
+  <div class="form-group">
+    <label for="student_id">Student</label>
+    <select class="form-control" id="student_id" name="student_id">
+      {% for student in students %}
+      <option value="{{ student.id }}" {% if student.id == model.student_id %}selected{% endif %}>
+        {{ student.username }}
+      </option>
+      {% endfor %}
+    </select>
+  </div>
+  
+  <div class="form-group">
+    <label for="course_id">Course</label>
+    <select class="form-control" id="course_id" name="course_id">
+      {% for course in courses %}
+      <option value="{{ course.id }}" {% if course.id == model.course_id %}selected{% endif %}>
+        {{ course.name }}
+      </option>
+      {% endfor %}
+    </select>
+  </div>
+  
+  <div class="form-group">
+    <label for="value">Grade Value</label>
+    <input type="number" step="0.01" class="form-control" id="value" name="value" value="{{ model.value }}">
+  </div>
+  
+  <div class="form-group">
+    <button type="submit" class="btn btn-primary">Save</button>
+    <a href="{{ url_for('.index_view') }}" class="btn btn-default">Cancel</a>
+  </div>
+</form>
+{% endblock %} 

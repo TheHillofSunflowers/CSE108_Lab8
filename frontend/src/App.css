@@ -1,0 +1,343 @@
+body {
+  font-family: 'Roboto', 'Open Sans', sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f0f4f8;
+  color: #334155;
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+  flex-grow: 1;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  font-size: 18px;
+  color: #64748b;
+}
+
+.error-message {
+  background-color: #fee2e2;
+  color: #b91c1c;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 24px;
+  border-left: 4px solid #ef4444;
+}
+
+/* Navbar styles */
+.navbar {
+  background-color: #0f4c81; /* New shade of blue */
+  color: white;
+  padding: 16px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.07);
+}
+
+.navbar-brand a {
+  color: white;
+  text-decoration: none;
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.navbar-menu {
+  display: flex;
+  align-items: center;
+}
+
+.navbar-item {
+  color: white;
+  margin-right: 20px;
+  font-weight: 500;
+}
+
+.logout-btn {
+  background-color: rgba(255,255,255,0.15);
+  border: none;
+  color: white;
+  padding: 8px 18px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.logout-btn:hover {
+  background-color: rgba(255,255,255,0.25);
+  transform: translateY(-1px);
+}
+
+/* Login styles */
+.login-container {
+  max-width: 420px;
+  margin: 80px auto;
+  background-color: white;
+  padding: 32px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.login-container h2 {
+  margin-top: 0;
+  color: #0f4c81;
+  text-align: center;
+  font-weight: 600;
+  margin-bottom: 24px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  color: #475569;
+  font-weight: 500;
+}
+
+.form-group input {
+  width: 90%;
+  padding: 12px 16px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 16px;
+  transition: border-color 0.2s ease;
+  margin: 0 auto;
+  display: block;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #0f4c81;
+  box-shadow: 0 0 0 2px rgba(15, 76, 129, 0.1);
+}
+
+.login-btn {
+  width: 100%;
+  padding: 14px;
+  background-color: #0f4c81;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.login-btn:hover {
+  background-color: #0b3a61;
+  transform: translateY(-1px);
+}
+
+/* Dashboard styles */
+.student-dashboard, .teacher-dashboard, .course-details {
+  background-color: white;
+  padding: 28px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+h2 {
+  color: #0f4c81;
+  margin-top: 0;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.tabs {
+  display: flex;
+  margin-bottom: 24px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.tabs button {
+  padding: 12px 24px;
+  background-color: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  margin-right: 16px;
+  cursor: pointer;
+  font-size: 16px;
+  color: #64748b;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.tabs button:hover {
+  color: #0f4c81;
+}
+
+.tabs button.active {
+  color: #0f4c81;
+  border-bottom: 3px solid #0f4c81;
+}
+
+.tab-content {
+  margin-top: 24px;
+}
+
+.courses-table, .students-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-top: 16px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.courses-table th, .courses-table td,
+.students-table th, .students-table td {
+  padding: 14px 16px;
+  text-align: left;
+}
+
+.courses-table tr:not(:last-child) td,
+.students-table tr:not(:last-child) td {
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.courses-table th, .students-table th {
+  font-weight: 600;
+  color: #1e293b;
+  background-color: #f1f5f9;
+  padding: 16px;
+}
+
+.enroll-btn, .drop-btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.enroll-btn {
+  background-color: #10b981;
+  color: white;
+}
+
+.enroll-btn:hover {
+  background-color: #059669;
+  transform: translateY(-1px);
+}
+
+.enroll-btn:disabled {
+  background-color: #a7f3d0;
+  cursor: not-allowed;
+}
+
+.drop-btn {
+  background-color: #ef4444;
+  color: white;
+}
+
+.drop-btn:hover {
+  background-color: #dc2626;
+  transform: translateY(-1px);
+}
+
+/* Course details styles */
+.back-btn {
+  padding: 10px 18px;
+  background-color: #f1f5f9;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  font-size: 15px;
+  transition: all 0.2s ease;
+  font-weight: 500;
+  color: #475569;
+}
+
+.back-btn:hover {
+  background-color: #e2e8f0;
+}
+
+.course-info {
+  background-color: #f0f4f8;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 24px;
+  border-left: 4px solid #0f4c81;
+}
+
+.grade-edit {
+  display: flex;
+  align-items: center;
+}
+
+.grade-edit input {
+  width: 70px;
+  padding: 8px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  margin-right: 10px;
+  transition: border-color 0.2s ease;
+}
+
+.grade-edit input:focus {
+  outline: none;
+  border-color: #0f4c81;
+  box-shadow: 0 0 0 2px rgba(15, 76, 129, 0.1);
+}
+
+.grade-edit button {
+  padding: 8px 16px;
+  background-color: #0f4c81;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.grade-edit button:hover {
+  background-color: #0b3a61;
+  transform: translateY(-1px);
+}
+
+/* Add some responsive design */
+@media (max-width: 768px) {
+  .container {
+    padding: 16px;
+  }
+  
+  .tabs button {
+    padding: 10px 16px;
+    font-size: 14px;
+  }
+  
+  .courses-table th, .courses-table td,
+  .students-table th, .students-table td {
+    padding: 12px;
+  }
+}
+
+/* Add subtle hover effects to tables */
+.courses-table tbody tr:hover,
+.students-table tbody tr:hover {
+  background-color: #f8fafc;
+}

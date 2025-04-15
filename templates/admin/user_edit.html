@@ -1,0 +1,30 @@
+{% extends 'admin/master.html' %}
+{% block body %}
+<h2>Edit User</h2>
+
+<form action="" method="POST" role="form">
+  <div class="form-group">
+    <label for="username">Username</label>
+    <input type="text" class="form-control" id="username" name="username" value="{{ model.username }}">
+  </div>
+  
+  <div class="form-group">
+    <label for="password">Password</label>
+    <input type="password" class="form-control" id="password" name="password" placeholder="Leave blank to keep current password">
+  </div>
+  
+  <div class="form-group">
+    <label for="role">Role</label>
+    <select class="form-control" id="role" name="role">
+      <option value="student" {% if model.role == 'student' %}selected{% endif %}>Student</option>
+      <option value="teacher" {% if model.role == 'teacher' %}selected{% endif %}>Teacher</option>
+      <option value="admin" {% if model.role == 'admin' %}selected{% endif %}>Admin</option>
+    </select>
+  </div>
+  
+  <div class="form-group">
+    <button type="submit" class="btn btn-primary">Save</button>
+    <a href="{{ url_for('.index_view') }}" class="btn btn-default">Cancel</a>
+  </div>
+</form>
+{% endblock %} 

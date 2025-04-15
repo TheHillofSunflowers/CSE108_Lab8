@@ -1,59 +1,62 @@
-from flask import Flask, request, jsonify, session, redirect, url_for
+from flask import Flask, request, jsonify, session, redirect, url_for, render_template
 from flask_cors import CORS
 from flask_admin import Admin, AdminIndexView
-from models import db, User, Course, Grade
-from admin_views import UserView, CourseView, EnhancedGradeView
+from models import db, User, Course, Grade, enrollments
 import os
+from admin_views import UserView, CourseView, EnhancedGradeView
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///student_enrollment.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = 'your-secret-key'
-app.config['PERMANENT_SESSION_LIFETIME'] = 1800
+app.config['FLASK_ADMIN_SWATCH'] = 'cerulean'
 
 CORS(app, supports_credentials=True)
 db.init_app(app)
 
-# Setup Flask-Admin with enhanced views
-app.config['FLASK_ADMIN_TEMPLATE_MODE'] = 'bootstrap3'
-admin = Admin(app, name='Student Enrollment Admin', template_mode='bootstrap3', 
-              base_template='admin/master.html',
-              index_view=AdminIndexView(
-                  url='/admin',
-                  template='admin/index.html'
-              ))
-os.makedirs('templates/admin', exist_ok=True)
+# Create admin security
+class SecureAdminIndexView(AdminIndexView):
+    def is_accessible(self):
+        user_id = session.get('user_id')
+        if not user_id:
+            return False
+        user = User.query.get(user_id)
+        return user and user.role == 'admin'
+    
+    def inaccessible_callback(self, name, **kwargs):
+        return redirect('http://localhost:3000/login')
 
-with open('templates/admin/master.html', 'w') as f:
-    f.write('''
-{% extends 'admin/base.html' %}
+# Create admin
+admin = Admin(app, name='Student Enrollment Admin', 
+              template_mode='bootstrap3',
+              index_view=SecureAdminIndexView())
 
-{% block access_control %}
-<div class="navbar-text btn-group pull-right">
-    <a href="{{ url_for('admin_logout') }}" class="btn btn-danger">Logout</a>
-</div>
-{% endblock %}
-''')
+# Import necessary modules for admin views
+from flask_admin.contrib.sqla import ModelView
 
-# Initialize the context
-with app.app_context():
-    admin.add_view(UserView(model=User, session=db.session))
-    admin.add_view(CourseView(model=Course, session=db.session))
-    admin.add_view(EnhancedGradeView(model=Grade, session=db.session))
+# Add views
+admin.add_view(UserView(User, db.session))
+admin.add_view(CourseView(Course, db.session))
+admin.add_view(EnhancedGradeView(Grade, db.session, endpoint='grade'))
 
-# API Routes
+# Admin login route
+@app.route('/admin/login', methods=['GET', 'POST'])
+def admin_login():
+    # Redirect to the frontend login page
+    return redirect('http://localhost:3000/login')
+
 @app.route('/admin/logout')
 def admin_logout():
     session.pop('user_id', None)
     session.pop('admin_logged_in', None)
     return redirect('http://localhost:3000/login')
 
-@app.route('/admin/')
-@app.route('/admin/<path:path>')
-def check_admin_login(path=None):
+@app.route('/admin')
+def admin_index():
     if 'admin_logged_in' not in session:
-        return redirect(url_for('login'))
-    return admin.index_view()
+        return redirect('http://localhost:3000/login')
+    # Direct user to the admin index
+    return redirect('/admin/')
 
 @app.route('/api/login', methods=['POST'])
 def login():
@@ -142,21 +145,61 @@ def student_courses():
         'available_courses': available_courses
     })
 
-@app.route('/api/teacher/courses')
+@app.route('/api/teacher/courses', methods=['GET'])
 def teacher_courses():
-    user_id = session.get('user_id')
-    
-    if not user_id:
+    # Get current user from session
+    current_user_id = session.get('user_id')
+    if not current_user_id:
         return jsonify({'error': 'Not logged in'}), 401
     
-    user = User.query.get(user_id)
+    # Get the user from database
+    user = User.query.get(current_user_id)
     
+    # Check if user is a teacher
     if not user or user.role != 'teacher':
-        return jsonify({'error': 'Permission denied'}), 403
+        return jsonify({'error': 'Unauthorized'}), 403
     
-    courses = [course.to_dict() for course in user.courses_teaching]
+    # Debug information
+    print(f"Teacher ID: {user.id}, Username: {user.username}")
     
-    return jsonify(courses)
+    # Get courses taught by the teacher
+    try:
+        if hasattr(user.courses_teaching, 'all'):
+            courses = user.courses_teaching.all()
+        else:
+            courses = list(user.courses_teaching)
+            
+        print(f"Found {len(courses)} courses for teacher")
+        
+        # If no courses found, check if there are any courses in the database
+        if not courses:
+            total_courses = Course.query.count()
+            print(f"Total courses in database: {total_courses}")
+            
+            # Check if teacher_id is properly set in courses
+            courses_with_this_teacher = Course.query.filter_by(teacher_id=user.id).all()
+            print(f"Courses with teacher_id={user.id}: {len(courses_with_this_teacher)}")
+            
+            # Manual inspection of courses
+            all_courses = Course.query.all()
+            for c in all_courses:
+                print(f"Course ID: {c.id}, Name: {c.name}, Teacher ID: {c.teacher_id}")
+        
+    except Exception as e:
+        print(f"Error getting courses: {str(e)}")
+        return jsonify({'error': f'Failed to retrieve courses: {str(e)}'}), 500
+    
+    # Convert courses to dictionary format
+    courses_list = []
+    for course in courses:
+        try:
+            course_dict = course.to_dict()
+            courses_list.append(course_dict)
+        except Exception as e:
+            print(f"Error converting course {course.id} to dict: {str(e)}")
+            # Continue with the next course if there's an error
+    
+    return jsonify(courses_list)
 
 @app.route('/api/teacher/course/<int:course_id>/students')
 def course_students(course_id):
@@ -173,7 +216,12 @@ def course_students(course_id):
     
     students_data = []
     for student in course.students:
-        student_dict = student.to_dict()
+        # Create a custom dictionary without email
+        student_dict = {
+            'id': student.id,
+            'username': student.username,
+            'role': student.role
+        }
         
         grade = Grade.query.filter_by(student_id=student.id, course_id=course.id).first()
         if grade:
@@ -286,6 +334,13 @@ def get_courses():
     courses_data = [course.to_dict() for course in courses]
     
     return jsonify(courses_data)
+
+with app.app_context():
+    db.create_all()
+    if not User.query.filter_by(role='admin').first():
+        admin_user = User(username='admin', password='admin', role='admin')
+        db.session.add(admin_user)
+        db.session.commit()
 
 if __name__ == '__main__':
     app.run(debug=True)
